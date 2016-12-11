@@ -115,3 +115,11 @@ body {
   text-align: center;
 }
 
+/* image location
+ *
+ */
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+ }

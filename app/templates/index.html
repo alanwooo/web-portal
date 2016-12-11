@@ -1,42 +1,26 @@
 {% extends "base.html" %}
-       {% block main %}
-         <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
-         <div class="container">
-          <div class="starter-template">
-            <h1 class="text-center">Welcome to HWE Code Coverage Project</h1>
-          </div>
-            <p class="lead">    We can automatically collect the code coverage data and save to our MongoDB for each driver. The code coverage data can guide us to design the new test cases and improve the current test cases. <br><br> Also we can use Smart Launcher to automatically deploy ESXi on the testbed, smart select test cases set for the given change set of tested driver, also collect the test result and post to the Tester. <br><br> This website also can help you automatically collect testbed information and manage the testbed.</p>
-          <!--<section class="row text-center placeholders">
-            <div class="col-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIABAAJ12AAAACwAAAAAAQABAAACAkQBADs=" width="200" height="200" class="img-fluid rounded-circle" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <div class="text-muted">Something else</div>
-            </div>
-          </section>-->
+{% block navigation %}
+  <nav class="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link active" href="#"><h5>MODULES :</h5><span class="sr-only">(current)</span></a>
+      </li>
+      {% for coll in collections %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for("driver", driver=coll) }}">{{coll}}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock navigation %}
 
-          <!--<h2>Details</h2>
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1,001</td>
-                  <td>Lorem</td>
-                  <td>ipsum</td>
-                  <td>dolor</td>
-                  <td>sit</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>-->
-          </div>
-          </main>
-       {% endblock main %}
+{% block main %}
+  <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
+    <div class="container">
+      <div class="starter-template">
+        <h1 class="text-center">Welcome to HWE Code Coverage Project</h1>
+      </div>
+        <p class="lead">We can automatically collect the code coverage data and save to MongoDB for each driver. The code coverage data can guide us to design new test cases and/or improve existing test cases. <br><br> Also we can use Smart Launcher to automatically deploy ESXi on a testbed, smartly select test cases set according to a given change set of tested driver, also collect the test result and post to the Tester. </p>
+    </div>
+  </main>
+{% endblock main %}

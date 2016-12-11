@@ -1,45 +1,78 @@
 {% extends "base.html" %}
-        {% block main %}
-        <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
-          <h1>Summary</h1>
+{% block navigation %}
+  <nav class="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link active" href="#"><h5>MODULES :</h5><span class="sr-only">(current)</span></a>
+      </li>
+      {% for coll in collections %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for("driver", driver=coll) }}">{{coll}}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock navigation %}
+{% block main %}
+  <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
+    <h1>Summary</h1>
+    <section class="row text-center placeholders">
+      <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    </section>
 
-          <section class="row text-center placeholders">
-            <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-          </section>
+    <h4>Collection Information</h4>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Collections</th>
+            <th>ESXi Build Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dt in drv_info[0] %}
+          <tr>
+            <td>{{dt[0]}}</td>
+            <td>{{dt[1]}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <hr>
+    <h2>Details</h2>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ESXi Build</th>
+            <th>Function Coverage Percent</th>
+            <th>Branch Coverage Percent</th>
+            <th>ESXi Version</th>
+            <th>ESXi Build Type</th>
+            <th>Test Case Name</th>
+            <th>VM Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dt in cov_data %}
+          <tr>
+            <td>{{dt[0]}}</td>
+            <td>{{dt[1]}}%</td>
+            <td>{{dt[2]}}%</td>
+            <td>{{dt[3]}}</td>
+            <td>{{dt[4]}}</td>
+            <td>{{dt[5]}}</td>
+            <td>{{dt[6]}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+{% endblock main %}
 
-          <h2>Details</h2>
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>ESXi Build</th>
-                  <th>Function Coverage Percent</th>
-                  <th>Branch Coverage Percent</th>
-                  <th>ESXi Version</th>
-                  <th>ESXi Build Type</th>
-                  <th>Test Case Name</th>
-                  <th>VM Number</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for dt in cov_data %}
-                <tr>
-                  <td>{{dt[0]}}</td>
-                  <td>{{dt[1]}}%</td>
-                  <td>{{dt[2]}}%</td>
-                  <td>{{dt[3]}}</td>
-                  <td>{{dt[4]}}</td>
-                  <td>{{dt[5]}}</td>
-                  <td>{{dt[6]}}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </main>
-        {% endblock main %}
-
-    {% block cylindchartjs %}
+{% block customjs %}
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script>
@@ -49,21 +82,21 @@
             type: 'column'
         },
         title: {
-            text: 'Code Coverage for {{drv}}'
+            text: 'Full Cycle Code Coverage for {{drv}}'
         },
         //subtitle: {
-        //    text: 'Source: WorldClimate.com'
+        //    text: 'HWE Code Coverage'
         //},
         credits:{
             enabled: 0
         },
         xAxis: {
-            title: {
-                text: 'ESXi Build Number'
-            },
+            //title: {
+            //    text: 'ESXi Build Number'
+            //},
             categories: [
                 {% for bld in drv_info[0] %}
-                '{{bld}}',
+                '{{bld[0]}}',
                 {% endfor %}
             ],
             crosshair: true
@@ -77,7 +110,7 @@
         tooltip: {
             headerFormat: '<span style="font-size:10px">ESXi Build: {point.key}</span><table>',
             pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.2f}%[/]</b></td></tr>',
+                '<td style="padding:0"><b>{point.y:.2f}%</b></td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
@@ -102,8 +135,8 @@
                     {{bn_p}},
                     {% endfor %}
                   ]
-        }]
+            }]
+        });
     });
-});
-    </script>
-    {% endblock cylindchartjs %}
+</script>
+{% endblock customjs %}

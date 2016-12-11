@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block customjs %}
+    <script type="text/javascript">
+    function getCaseList() {
+        var change = $('#change_set').val()
+        var module = $('#kernel_module option:selected').val()
+        var isnum = /^[0-9]+$/.test(change);
+        if (!change) {
+            alert("Please input the change set number !");
+            return;
+        }
+        if (!isnum){
+            alert("Please input the correct change set number !!!");
+            return;
+        }
+
+        $('#get_case').text('Launching...');
+
+        $.getJSON('/caselist', {"change":change, "module":module}, function(json) {
+                   var hd=$("<hr><h4>Selected Group</h4><hr>");
+                   hd.appendTo("#createtable");
+
+                   //var hd=$("<strong>Warning!</strong><p>2 test cases data was not the latest !</p>");
+                   //hd.appendTo("#alert_warning");
+
+                   var table=$("<table id=\"table\" style=\"width: 100%\">");
+                   table.appendTo($("#createtable"));
+
+                   var thead=$("<thead></thead>")
+                   thead.appendTo(table);
+
+                   var tr=$("<tr></tr>")
+                   tr.appendTo(thead);
+
+                   var th=$("<th>Selected</th>")
+                   th.appendTo(tr);
+
+                   var th=$("<th>Test case</th>")
+                   th.appendTo(tr);
+
+                   var th=$("<th>Hits</th>")
+                   th.appendTo(tr);
+
+                   var tbody=$("<tbody></tbody>")
+                   tbody.appendTo(table);
+
+                   var func_list = json.func_list;
+                   $.each(func_list, function(key, val){
+                           var tr=$("<tr></tr>");
+                           tr.appendTo(table);
+                           var td=$("<td><input type=\"checkbox\" name=\"checked_checkbox\" checked=\"checked\" value="+key+"></td>");
+                           td.appendTo(tr);
+                           var td=$("<td>"+key+"</td>");
+                           td.appendTo(tr);
+                           var td=$("<td>"+val+"</td>");
+                           td.appendTo(tr);
+                         });
+                  $("#createtable").append("</table><hr>");
+                  //console.log("for debug...");
+                  $('#get_case').hide();
+                  $('#launcher_selected').show();
+                  $('#launchost').show();
+                  $('#launchost_lab').show();
+                  $('#testbed').show();
+                  $('#testbed_lab').show();
+                  $('#testername').show();
+                  $('#testername_lab').show();
+                 });
+    }
+    /* We do not use jquery to post the data to the web server since
+     * the web page cannot jump to the next page after jquery post
+     */
+    function getSelectedList() {
+        var caselist = new Array();
+        $("#createtable").find(":checkbox").each(function() {
+            if ($(this).is(":checked")) {
+                //alert($(this).val())
+                caselist.push($(this).val());
+            }
+        });
+        if(caselist.length == 0) {
+            alert('Please select at least one case !!!');
+            //$('#launch_case').attr("disabled", true);
+            return false;
+        }
+        var lhost = $('#launchost').val()
+        if (!lhost) {
+            alert('Please input the launcher name!');
+            return false;
+        }
+        var testbed= $('#testbed').val()
+        if (!testbed) {
+            alert('Please input the testbed name!');
+            return false;
+        }
+        var testername = $('#testername').val()
+        if (!testername) {
+            alert('Please input the tester name!');
+            return false;
+        }
+        $('#launcher_selected').text('Launching...');
+        //$.post('/runcase', {func_list:'haha'}, function(data){
+        //       window.location.href = 'http://www.baidu.com'
+        //            console.log(data);
+        //});
+        }
+    </script>
+{% endblock customjs %}
+{% block main %}
+<div class="container">
+  <h2>Smart Launcher</h2>
+  <p>Please input the change set number:</p>
+  <form>
+    <div class="form-group">
+      <label>Change set:<input type="text" placeholder="change set number" class="form-control" id="change_set"></label>
+      <label for="usr">Kernel module:
+        <select id="kernel_module" class="form-control">
+          {% for coll in collections %}
+          <option value="{{coll}}">{{coll}}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+    <!--<div class="checkbox">
+      <label><input type="checkbox"> Auto-launch test cases</label>
+    </div>-->
+    <button type="button" id="get_case" class="btn btn-primary" onclick=getCaseList()>Launch</button>
+  </form>
+  <!--<div class="alert alert-warning" id="alert_warning">
+  </div>-->
+  <form role="form" id="launch_case" method="post" action="/runcase" onsubmit="return getSelectedList()">
+    <div id="createtable">
+    </div>
+    <div id="starttolaunch">
+      <label id="launchost_lab" style="display:none">Launcher:<input type="text" placeholder="Launcher hostname/ip" style="display:none" class="form-control" id="launchost" name="launchost"></label>    <label id="testbed_lab" style="display:none">Testbed:<input type="text" placeholder="Testbed hostname/ip" style="display:none" class="form-control" id="testbed" name="testbed"></label>    <label id="testername_lab" style="display:none">Username:<input type="text" placeholder="VMWare ID" style="display:none" class="form-control" id="testername" name="testername"></label>
+    </div>
+    <button type="submit" id="launcher_selected" style="display:none" class="btn btn-primary">Launch</button>
+  </form>
+</div>
+{% endblock main %}

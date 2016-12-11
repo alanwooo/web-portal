@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block main %}
+<div class="container">
+  <h2>Console output : </h2>
+  <hr>
+  <p> Starting to launching the following test cases on {{launchost}} by {{user}}
+  <p> {% for case in cases %} {{case}}<br> {% endfor %}
+  <p> Command : {{cmd}}
+  <span id="cmdOutput"></span>
+  <div class="container" id="resultcontainer">
+  </div>
+  <img id="loading" src='../static/demo_wait.gif' class="center-block" width="64" height="64" />
+</div>
+{% endblock main %}
+
+{% block customjs %}
+<script>
+function disable_loading() {
+    $("#loading").hide();
+}
+$(document).ready(function() {
+    handle=setInterval("getoutput()",3000); // call every 3 seconds
+});
+var stats='';
+function getoutput(){
+    //$("#resultcontainer").empty();
+    $.getJSON('/getresult/{{jobid}}', {}, function(json) {
+        stats=json.stats
+        var p=$("<p>"+json.msg+"</p>");
+        p.appendTo("#resultcontainer");
+    });
+    if(stats){  
+        clearInterval(handle);
+        $("#loading").hide();
+        //alert("game over");  
+    }  
+}
+
+</script>
+{% endblock customjs %}

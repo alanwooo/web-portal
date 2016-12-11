@@ -85,14 +85,18 @@ class mongo():
         @return 
         """
         # [[esxi build number], [function percent], [branch percent]]
-        ret = [[],[],[]]
+        ret = [[],[],[],[]]
         coll = self.conn[dbname][driver]
-        for rd in coll.find().sort("esx_buildnum", pymongo.DESCENDING):
+        i = 0
+        for rd in coll.find().sort("build_number", pymongo.DESCENDING):
             if len(ret[0]) > 10:
                 break
-            ret[0].append(rd['esx_buildnum'])
+            # ret[0].append(rd['build_number'][0])
+            ret[0].append(['Driver Collection %s' % i, ', '.join([str(x) for x in rd['build_number']])])
             ret[1].append(str(round(rd['function_percent'] * 100, 2)))
             ret[2].append(str(round(rd['branch_percent'] * 100, 2)))
+            ret[3].append(','.join([str(x) for x in rd['build_number']]))
+            i += 1
         map(lambda x: x.reverse(), ret)
         return ret
 
